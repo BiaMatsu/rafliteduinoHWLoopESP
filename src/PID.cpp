@@ -33,8 +33,8 @@ PID_t::PID_t()
 {
   // Some typical values
   dt = 0.04;
-  Ki = 11.6;
-  Kp = 8.7;
+  Ki = 11.6/2; //Ganhos relacionados ao robo, neste caso, relaciona-se com a velocidade angular. Foi dividido por dois, para evitar mais margens de erro na hora do robo girar
+  Kp = 8.7/2; //Ganhos relacionados ao robo, neste caso, relaciona-se com a velocidade angular.Foi dividido por dois, para evitar mais margens de erro na hora do robo girar
   Kd = 0;
   Kf = 9.8;
   
@@ -57,7 +57,7 @@ float PID_t::calc(float new_w_ref, float new_w)
   de = (e - last_e) / dt;
   
   // Calc PID output
-  m = Kp * e + Ki * Se + Kd * de + Kf * w_ref;
+  m = Kp * e + Ki * Se + Kd * de + Kf * w_ref; //Fórmula para calcular a saída do PID (controlador) em tempo real
 
   // Anti windup
   //if (m > m_max || m < m_min) {

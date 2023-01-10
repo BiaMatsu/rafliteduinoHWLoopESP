@@ -93,14 +93,17 @@ void control(robot_t& robot)
 
     } else if (robot.state == 8) { // Drop the box and go back
       robot.solenoid_state = 0;
-      if (robot.tis < 2000) {
-        
+      robot.setRobotVW(0, 0);
+      if (robot.tis > 2000 && robot.solenoid_state ==0) {
         robot.setRobotVW(-0.1, 0);
         robot.followLineRight(IRLine, RobotVelocity, -0.05); 
         }
-      else robot.setRobotVW(0, 0);   
+      else {
+        robot.setRobotVW(0, 0);
+        
+        }   
     
-    } 
+    }
     
 
      // GET THE SECOND BOX 
