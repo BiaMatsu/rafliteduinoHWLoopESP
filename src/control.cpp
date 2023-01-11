@@ -38,17 +38,30 @@ void control(robot_t& robot)
       robot.setState(6);
 
     } else if(robot.state == 6 && robot.rel_theta < radians(-70) && IRLine.total > 1500) {
+      robot.rel_theta = 0;
+      robot.rel_s = 0;
       robot.setState(7);
 
     } else if(robot.state == 7 && robot.tis > 2000) {
+      robot.rel_s = 0;
       IRLine.crosses = 0;
       robot.setState(8);
 
-    }else if(robot.state ==8 && robot.tis > 2000) {
-      IRLine.crosses = 0;
+    }else if(robot.state ==8 && robot.tis > 2500 ) {
+      robot.rel_theta = 0;
+      robot.rel_s = 0;
+      robot.setState(9);
+
+    }else if(robot.state ==9 && robot.rel_theta > radians(70)) {
       robot.setState(10);
 
-    }else if (robot.state == 202 && robot.tis > robot.T1) {
+    }else if(robot.state ==10 ) {
+      IRLine.crosses = 0;
+      robot.setState(11);
+
+    }
+    
+    else if (robot.state == 202 && robot.tis > robot.T1) {
       robot.setState(200);
     }
 
@@ -83,20 +96,21 @@ void control(robot_t& robot)
       
     } else if (robot.state == 6) {  // Advance a little then turn to place the box
       robot.solenoid_state = 1;
-      if (robot.rel_s < 0.1) robot.followLineRight(IRLine, 0.1, -0.04);
-      else if (robot.rel_s < 0.33) robot.followLineLeft(IRLine, 0.1, -0.04);
+      if (robot.rel_s < 0.1) robot.followLineRight(IRLine, RobotVelocity, -0.04);
+      else if (robot.rel_s < 0.33) robot.followLineLeft(IRLine, RobotVelocity, -0.04);
       else robot.setRobotVW(0.0, -1);
       
-    } else if (robot.state == 7) {  
+    }
+     else if (robot.state == 7) { 
       robot.solenoid_state = 1;
-      robot.followLineRight(IRLine, RobotVelocity, -0.05); 
+      robot.followLineRight(IRLine, 0.2, -0.01); 
 
-    } else if (robot.state == 8) { // Drop the box and go back
+    } 
+    else if (robot.state == 8) { // Drop the box and go back
       robot.solenoid_state = 0;
-      robot.setRobotVW(0, 0);
-      if (robot.tis > 2000 && robot.solenoid_state ==0) {
-        robot.setRobotVW(-0.1, 0);
-        robot.followLineRight(IRLine, RobotVelocity, -0.05); 
+      if (
+        robot.solenoid_state ==0 ) {
+        robot.setRobotVW(-0.1, 0);  // if solenoid is off, then go back a little bit
         }
       else {
         robot.setRobotVW(0, 0);
@@ -104,12 +118,23 @@ void control(robot_t& robot)
         }   
     
     }
+
+
+    // GET THE SECOND BOX 
     
 
-     // GET THE SECOND BOX 
-    
+     else if (robot.state == 9) {  // Turn 90 degrees and continue pending to the right side
+      robot.solenoid_state = 0;
+      robot.followLineRight(IRLine, RobotVelocity, -0.04);
+      if(IRLine.crosses == 4 && robot.rel_s > 0.5) robot.followLineLeft(IRLine, RobotVelocity, -0.04);
+      // else robot.setRobotVW(0,0);
+      
+    } 
+     
 
-    else if (robot.state == 10) { //Test
+    else if (robot.state == 10) {
+      robot.solenoid_state = 0;
+      robot.followLineLeft(IRLine, RobotVelocity, -0.05);
 
     } else if (robot.state == 100) {
       robot.v_req = 0;
