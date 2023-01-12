@@ -13,10 +13,10 @@ void control(robot_t& robot)
 
     // Rules for the state evolution
      if(robot.state == 0 && robot.LastTouchSwitch && !robot.TouchSwitch) {
-      robot.rel_s = 0;
+      robot.rel_s = 0; //relaciona com o quanto o robô andou (distância)
       robot.setState(1);
 
-    } else if (robot.state == 1 && robot.TouchSwitch) {
+    } else if (robot.state == 1 && robot.TouchSwitch) { //touchswitch é o botão que permite mandar um sinal para ligar a bobina
       robot.setState(2);
 
     } else if(robot.state == 2 && robot.tis > 100) {
@@ -24,7 +24,7 @@ void control(robot_t& robot)
       robot.setState(3);
 
     } else if(robot.state == 3 && robot.rel_s < -0.12) {
-      robot.rel_theta = 0;
+      robot.rel_theta = 0; //relação com ângulo rodado do robô
       robot.setState(4);
 
     //} else if(robot.state == 4 && robot.rel_theta > radians(90) && IRLine.total > 1500) {
@@ -47,12 +47,12 @@ void control(robot_t& robot)
       IRLine.crosses = 0;
       robot.setState(8);
 
-    }else if(robot.state ==8 && robot.tis > 2500 ) {
+    }else if(robot.state ==8 && robot.rel_s < -0.12 && robot.tis > 2000) {
       robot.rel_theta = 0;
       robot.rel_s = 0;
       robot.setState(9);
 
-    }else if(robot.state ==9 && robot.rel_theta > radians(70)) {
+    }else if(robot.state ==9 && robot.rel_theta > radians(70))  {
       robot.setState(10);
 
     }else if(robot.state ==10 ) {
@@ -103,13 +103,12 @@ void control(robot_t& robot)
     }
      else if (robot.state == 7) { 
       robot.solenoid_state = 1;
-      robot.followLineRight(IRLine, 0.2, -0.01); 
+      robot.followLineRight(IRLine, 0.2, -0.04); 
 
     } 
     else if (robot.state == 8) { // Drop the box and go back
       robot.solenoid_state = 0;
-      if (
-        robot.solenoid_state ==0 ) {
+      if (robot.solenoid_state == 0 ) {
         robot.setRobotVW(-0.1, 0);  // if solenoid is off, then go back a little bit
         }
       else {
@@ -125,16 +124,18 @@ void control(robot_t& robot)
 
      else if (robot.state == 9) {  // Turn 90 degrees and continue pending to the right side
       robot.solenoid_state = 0;
-      robot.followLineRight(IRLine, RobotVelocity, -0.04);
-      if(IRLine.crosses == 4 && robot.rel_s > 0.5) robot.followLineLeft(IRLine, RobotVelocity, -0.04);
+      robot.followLineRight(IRLine, 0.1, -0.04);
+      // if (robot.rel_s < 0.1) robot.followLineRight(IRLine, RobotVelocity, -0.04);
+      // else if (IRLine.crosses == 4 && robot.rel_s > 0.5) robot.followLineLeft(IRLine, RobotVelocity, -0.04);
       // else robot.setRobotVW(0,0);
       
     } 
      
 
     else if (robot.state == 10) {
-      robot.solenoid_state = 0;
-      robot.followLineLeft(IRLine, RobotVelocity, -0.05);
+      robot.setRobotVW(0,0);
+      // robot.solenoid_state = 0;
+      // robot.followLineLeft(IRLine, RobotVelocity, -0.05);
 
     } else if (robot.state == 100) {
       robot.v_req = 0;
