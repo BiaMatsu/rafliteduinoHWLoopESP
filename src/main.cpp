@@ -342,7 +342,7 @@ void setup()
 
  
 
-  UsingSimulator = 1;
+  UsingSimulator = 0;
   //testIR = 0;
 
   schedule.interval = 40000UL;

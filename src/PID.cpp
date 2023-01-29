@@ -36,7 +36,7 @@ PID_t::PID_t()
   Ki = 11.6/998;
   Kp = 8.7/2;
   Kd = 0;
-  Kf = 9.82; //testar depois dividindo também por 
+  Kf = 9.82;
   
   m_max = 5.8;
   m_min = -5.8;
